@@ -1,7 +1,10 @@
+import InfoContent from "@/components/info-content";
+import StatusBar from "@/components/status-bar";
 import { IPokemon } from "@/constants/type.model";
+import { getTypeColor } from "@/utils";
 import { fetchPokemon } from "@/utils/api";
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -16,6 +19,14 @@ export default function PokemonDetailScreen() {
 
   const [pokemon, setPokemon] = useState<IPokemon | null>(null);
   const [tab, setTab] = useState<"stats" | "info">("stats");
+
+  const primary = useMemo(() => {
+    return pokemon?.types[0].type.name;
+  }, [pokemon]);
+
+  const c = useMemo(() => {
+    return getTypeColor(primary || "normal");
+  }, [primary]);
 
   useEffect(() => {
     if (!id) return;
@@ -37,8 +48,6 @@ export default function PokemonDetailScreen() {
       </View>
     );
   }
-
-  const primary = pokemon.types[0].type.name;
 
   const image =
     pokemon.sprites.other["official-artwork"].front_default ||
@@ -139,13 +148,61 @@ export default function PokemonDetailScreen() {
 
         {/* Content */}
 
-        {/* <View style={{ padding: 20 }}>
+        <View style={{ padding: 20 }}>
           {tab === "stats" ? (
-            <StatusBar name={pokemon.name} value={pokemon.} />
+            <View>
+              <Text
+                style={{
+                  color: "rgba(255,255,255,0.3)",
+                  fontSize: 14,
+                  fontWeight: "700",
+                }}
+              >
+                Base Stats
+              </Text>
+              <View style={{ flexDirection: "column", gap: 8, marginTop: 12 }}>
+                {pokemon.stats.map((stat) => (
+                  <StatusBar
+                    key={stat.stat.name}
+                    name={stat.stat.name}
+                    value={stat.base_stat}
+                  />
+                ))}
+              </View>
+
+              <View
+                style={{
+                  flexDirection: "column",
+                  alignItems: "center",
+                  marginTop: 20,
+                  gap: 4,
+                  backgroundColor: `${c.bg}22`,
+                  borderColor: `${c.bg}33`,
+                  width: "100%",
+                  borderRadius: 16,
+                  overflow: "hidden",
+                  borderWidth: 1,
+                  paddingVertical: 12,
+                }}
+              >
+                <Text
+                  style={{
+                    color: "rgba(255,255,255,0.3)",
+                    fontSize: 14,
+                    fontWeight: "700",
+                  }}
+                >
+                  Base Exp:
+                </Text>
+                <Text style={{ color: "#fff", fontSize: 14 }}>
+                  {pokemon.base_experience}
+                </Text>
+              </View>
+            </View>
           ) : (
-            <InfoContent pokemon={pokemon} />
+            <InfoContent pokemon={pokemon} c={c} />
           )}
-        </View> */}
+        </View>
       </ScrollView>
     </View>
   );
