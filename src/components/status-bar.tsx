@@ -6,7 +6,7 @@ type StatBarProps = {
   value: number;
 };
 
-export default function StatBar({ name, value }: StatBarProps) {
+export default function StatusBar({ name, value }: StatBarProps) {
   const pct = Math.min(100, (value / 255) * 100);
 
   const color = value < 50 ? "#FF4D4D" : value < 90 ? "#F7C94B" : "#2DC76A";

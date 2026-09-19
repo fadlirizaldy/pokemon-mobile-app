@@ -8,7 +8,7 @@ export default function BottomNav() {
 
   return (
     <View
-      className="flex-row border-t"
+      className="flex-row border-t w-full shrink-0"
       style={{
         borderColor: "rgba(255,255,255,0.08)",
         backgroundColor: "rgba(10,10,20,0.95)",

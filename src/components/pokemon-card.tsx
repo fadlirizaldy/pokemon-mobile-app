@@ -1,15 +1,17 @@
 import { IPokemon } from "@/constants/type.model";
 import { getTypeColor } from "@/utils";
-import { Image, Pressable, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import TypeBadge from "./type-badge";
 
-type PokemonCardProps = {
+export function PokemonCard({
+  pokemon,
+  onPress,
+  index,
+}: {
   pokemon: IPokemon;
   onPress: () => void;
   index: number;
-};
-
-export function PokemonCard({ pokemon, onPress }: PokemonCardProps) {
+}) {
   const primary = pokemon.types[0].type.name;
   const c = getTypeColor(primary);
 
@@ -20,56 +22,135 @@ export function PokemonCard({ pokemon, onPress }: PokemonCardProps) {
   return (
     <Pressable
       onPress={onPress}
-      className="w-full overflow-hidden rounded-2xl"
-      style={{
-        backgroundColor: `${c.bg}22`,
-        borderWidth: 1,
-        borderColor: `${c.bg}33`,
-      }}
+      style={[
+        styles.card,
+        {
+          backgroundColor: `${c.bg}22`,
+          borderColor: `${c.bg}33`,
+        },
+      ]}
     >
-      <View className="flex-row items-center gap-3 p-3">
+      <View style={styles.content}>
+        {/* Pokemon image */}
         <View
-          className="h-16 w-16 shrink-0 items-center justify-center rounded-xl"
-          style={{
-            backgroundColor: `${c.bg}20`,
-          }}
+          style={[
+            styles.imageContainer,
+            {
+              backgroundColor: `${c.bg}20`,
+            },
+          ]}
         >
           {img ? (
             <Image
               source={{ uri: img }}
-              accessibilityLabel={pokemon.name}
-              className="h-14 w-14"
+              style={styles.pokemonImage}
               resizeMode="contain"
             />
           ) : (
-            <View className="h-10 w-10 rounded-full bg-white/10" />
+            <View style={styles.imagePlaceholder} />
           )}
         </View>
 
-        <View className="min-w-0 flex-1">
-          <Text className="mb-0.5 font-mono text-[10px] text-white/30">
-            #{String(pokemon.id).padStart(3, "0")}
-          </Text>
+        {/* Pokemon info */}
+        <View style={styles.info}>
+          <Text style={styles.id}>#{String(pokemon.id).padStart(3, "0")}</Text>
 
-          <Text className="text-sm font-semibold capitalize text-white">
+          <Text style={styles.name} numberOfLines={1}>
             {pokemon.name}
           </Text>
 
-          <View className="mt-1 flex-row flex-wrap gap-1">
+          {/* Types */}
+          <View style={styles.types}>
             {pokemon.types.map((t) => (
               <TypeBadge key={t.type.name} type={t.type.name} />
             ))}
           </View>
         </View>
 
-        <Text className="text-lg text-white/20">{">"}</Text>
+        {/* Arrow */}
+        <Text style={styles.arrow}>›</Text>
       </View>
     </Pressable>
   );
 }
 
-export function SkeletonCard() {
-  return (
-    <View className="h-[88px] w-full overflow-hidden rounded-2xl bg-white/5" />
-  );
+function SkeletonCard() {
+  return <View style={styles.skeletonCard} />;
 }
+
+const styles = StyleSheet.create({
+  card: {
+    width: "100%",
+    borderRadius: 16,
+    overflow: "hidden",
+    borderWidth: 1,
+  },
+
+  content: {
+    padding: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+
+  imageContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+
+  pokemonImage: {
+    width: 56,
+    height: 56,
+  },
+
+  imagePlaceholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(255,255,255,0.1)",
+  },
+
+  info: {
+    flex: 1,
+    minWidth: 0,
+  },
+
+  id: {
+    fontSize: 10,
+    color: "rgba(255,255,255,0.3)",
+    marginBottom: 2,
+    fontFamily: "monospace",
+  },
+
+  name: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "600",
+    textTransform: "capitalize",
+  },
+
+  types: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 4,
+    marginTop: 4,
+  },
+
+  arrow: {
+    color: "rgba(255,255,255,0.2)",
+    fontSize: 28,
+    fontWeight: "300",
+  },
+
+  skeletonCard: {
+    width: "100%",
+    height: 88,
+    borderRadius: 16,
+    backgroundColor: "rgba(255,255,255,0.06)",
+    overflow: "hidden",
+  },
+});

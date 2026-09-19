@@ -1,14 +1,34 @@
-import { Text } from "react-native";
-import { getTypeColor } from "../utils";
+import { getTypeColor } from "@/utils";
+import { Text, View } from "react-native";
 
-export default function TypeBadge({ type }: { type: string }) {
-  const c = getTypeColor(type);
+type Props = {
+  type: string;
+};
+
+export default function TypeBadge({ type }: Props) {
+  const color = getTypeColor(type);
+
   return (
-    <Text
-      className="type-badge text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full"
-      style={{ backgroundColor: c.bg, color: c.text }}
+    <View
+      style={{
+        backgroundColor: `${color.bg}33`,
+        borderWidth: 1,
+        borderColor: `${color.bg}55`,
+        borderRadius: 8,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+      }}
     >
-      {type}
-    </Text>
+      <Text
+        style={{
+          color: "#fff",
+          fontSize: 9,
+          fontWeight: "600",
+          textTransform: "uppercase",
+        }}
+      >
+        {type}
+      </Text>
+    </View>
   );
 }
