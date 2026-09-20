@@ -1,10 +1,12 @@
-import { PokemonCard } from "@/components/pokemon-card";
+import TypeBadge from "@/components/type-badge";
 import { IPokemon } from "@/constants/type.model";
+import { getTypeColor } from "@/utils";
 import { fetchPokemon } from "@/utils/api";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -18,6 +20,13 @@ export default function SearchScreen() {
   const [result, setResult] = useState<IPokemon | null>(null);
   const [error, setError] = useState("");
   const [searching, setSearching] = useState(false);
+
+  const img = useMemo(() => {
+    return (
+      result?.sprites.other["official-artwork"].front_default ||
+      result?.sprites.front_default
+    );
+  }, [result]);
 
   const search = async () => {
     const q = query.trim().toLowerCase();
@@ -37,6 +46,14 @@ export default function SearchScreen() {
       setSearching(false);
     }
   };
+
+  const primary = useMemo(() => {
+    return result?.types[0].type.name;
+  }, [result]);
+
+  const c = useMemo(() => {
+    return getTypeColor(primary || "normal");
+  }, [primary]);
 
   return (
     <View style={styles.container}>
@@ -60,13 +77,7 @@ export default function SearchScreen() {
             style={styles.input}
           />
 
-          <Pressable
-            onPress={search}
-            style={({ pressed }) => [
-              styles.goButton,
-              pressed && styles.goButtonPressed,
-            ]}
-          >
+          <Pressable onPress={search} style={styles.goButton}>
             <Text style={styles.goText}>Go</Text>
           </Pressable>
         </View>
@@ -94,13 +105,59 @@ export default function SearchScreen() {
 
         {/* Result */}
         {result && (
-          <View style={styles.resultCard}>
-            <PokemonCard
-              pokemon={result}
-              index={0}
-              onPress={() => router.push(`/pokemon/${result.id}`)}
-            />
-          </View>
+          <Pressable
+            onPress={() => router.push(`/pokemon/${result.id}`)}
+            style={[
+              stylesCard.card,
+              {
+                backgroundColor: `${c.bg}18`,
+                borderColor: `${c.bg}44`,
+              },
+            ]}
+          >
+            <View style={stylesCard.content}>
+              {img && (
+                <View style={stylesCard.imageContainer}>
+                  {/* Glow */}
+                  <Image
+                    source={{ uri: img }}
+                    accessibilityLabel=""
+                    resizeMode="contain"
+                    style={[
+                      stylesCard.imageGlow,
+                      {
+                        tintColor: c.glow,
+                      },
+                    ]}
+                  />
+
+                  {/* Actual image */}
+                  <Image
+                    source={{ uri: img }}
+                    accessibilityLabel={result.name}
+                    resizeMode="contain"
+                    style={stylesCard.image}
+                  />
+                </View>
+              )}
+
+              <View style={stylesCard.info}>
+                <Text style={stylesCard.id}>
+                  #{String(result.id).padStart(3, "0")}
+                </Text>
+
+                <Text style={stylesCard.name}>{result.name}</Text>
+
+                <View style={stylesCard.types}>
+                  {result.types.map((t) => (
+                    <TypeBadge key={t.type.name} type={t.type.name} />
+                  ))}
+                </View>
+              </View>
+
+              <Text style={stylesCard.hint}>Tap to view details →</Text>
+            </View>
+          </Pressable>
         )}
 
         {/* Empty */}
@@ -293,5 +350,74 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     textAlign: "center",
+  },
+});
+
+const stylesCard = StyleSheet.create({
+  card: {
+    width: "100%",
+    overflow: "hidden",
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+
+  content: {
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
+    padding: 24,
+    gap: 12,
+  },
+
+  imageContainer: {
+    width: 128,
+    height: 128,
+    position: "relative",
+  },
+
+  imageGlow: {
+    position: "absolute",
+
+    width: 128,
+    height: 128,
+
+    opacity: 0.7,
+
+    transform: [{ scale: 1.15 }],
+  },
+
+  image: {
+    width: 128,
+    height: 128,
+  },
+
+  info: {
+    alignItems: "center",
+  },
+
+  id: {
+    marginBottom: 4,
+    color: "rgba(255,255,255,0.3)",
+    fontSize: 10,
+    fontFamily: "monospace",
+  },
+
+  name: {
+    marginBottom: 8,
+    color: "#FFFFFF",
+    fontSize: 20,
+    fontWeight: "700",
+    textTransform: "capitalize",
+  },
+
+  types: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 4,
+  },
+
+  hint: {
+    color: "rgba(255,255,255,0.4)",
+    fontSize: 12,
   },
 });
