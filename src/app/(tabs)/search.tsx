@@ -1,12 +1,10 @@
-import TypeBadge from "@/components/type-badge";
+import ResultCard from "@/components/result-card";
 import { IPokemon } from "@/constants/type.model";
 import { getTypeColor } from "@/utils";
 import { fetchPokemon } from "@/utils/api";
-import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import {
   ActivityIndicator,
-  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -104,61 +102,7 @@ export default function SearchScreen() {
         )}
 
         {/* Result */}
-        {result && (
-          <Pressable
-            onPress={() => router.push(`/pokemon/${result.id}`)}
-            style={[
-              stylesCard.card,
-              {
-                backgroundColor: `${c.bg}18`,
-                borderColor: `${c.bg}44`,
-              },
-            ]}
-          >
-            <View style={stylesCard.content}>
-              {img && (
-                <View style={stylesCard.imageContainer}>
-                  {/* Glow */}
-                  <Image
-                    source={{ uri: img }}
-                    accessibilityLabel=""
-                    resizeMode="contain"
-                    style={[
-                      stylesCard.imageGlow,
-                      {
-                        tintColor: c.glow,
-                      },
-                    ]}
-                  />
-
-                  {/* Actual image */}
-                  <Image
-                    source={{ uri: img }}
-                    accessibilityLabel={result.name}
-                    resizeMode="contain"
-                    style={stylesCard.image}
-                  />
-                </View>
-              )}
-
-              <View style={stylesCard.info}>
-                <Text style={stylesCard.id}>
-                  #{String(result.id).padStart(3, "0")}
-                </Text>
-
-                <Text style={stylesCard.name}>{result.name}</Text>
-
-                <View style={stylesCard.types}>
-                  {result.types.map((t) => (
-                    <TypeBadge key={t.type.name} type={t.type.name} />
-                  ))}
-                </View>
-              </View>
-
-              <Text style={stylesCard.hint}>Tap to view details →</Text>
-            </View>
-          </Pressable>
-        )}
+        {result && <ResultCard result={result} img={img} c={c} />}
 
         {/* Empty */}
         {!result && !searching && !error && (
@@ -230,32 +174,21 @@ const styles = StyleSheet.create({
 
   input: {
     flex: 1,
-
     height: 48,
-
     paddingHorizontal: 16,
-
     borderRadius: 12,
-
     backgroundColor: "rgba(255,255,255,0.08)",
-
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.12)",
-
     color: "#FFFFFF",
-
     fontSize: 14,
   },
 
   goButton: {
     height: 48,
-
     paddingHorizontal: 18,
-
     borderRadius: 12,
-
     backgroundColor: "#F7C94B",
-
     alignItems: "center",
     justifyContent: "center",
   },
@@ -329,14 +262,10 @@ const styles = StyleSheet.create({
   emptyIcon: {
     width: 64,
     height: 64,
-
     borderRadius: 32,
-
     backgroundColor: "rgba(255,255,255,0.05)",
-
     alignItems: "center",
     justifyContent: "center",
-
     marginBottom: 12,
   },
 
@@ -350,74 +279,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     textAlign: "center",
-  },
-});
-
-const stylesCard = StyleSheet.create({
-  card: {
-    width: "100%",
-    overflow: "hidden",
-    borderRadius: 16,
-    borderWidth: 1,
-  },
-
-  content: {
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column",
-    padding: 24,
-    gap: 12,
-  },
-
-  imageContainer: {
-    width: 128,
-    height: 128,
-    position: "relative",
-  },
-
-  imageGlow: {
-    position: "absolute",
-
-    width: 128,
-    height: 128,
-
-    opacity: 0.7,
-
-    transform: [{ scale: 1.15 }],
-  },
-
-  image: {
-    width: 128,
-    height: 128,
-  },
-
-  info: {
-    alignItems: "center",
-  },
-
-  id: {
-    marginBottom: 4,
-    color: "rgba(255,255,255,0.3)",
-    fontSize: 10,
-    fontFamily: "monospace",
-  },
-
-  name: {
-    marginBottom: 8,
-    color: "#FFFFFF",
-    fontSize: 20,
-    fontWeight: "700",
-    textTransform: "capitalize",
-  },
-
-  types: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 4,
-  },
-
-  hint: {
-    color: "rgba(255,255,255,0.4)",
-    fontSize: 12,
   },
 });

@@ -19,4 +19,5 @@ export interface IPokemon {
   weight: number;
   abilities: { ability: { name: string }; is_hidden: boolean }[];
   base_experience: number;
+  forms: { name: string; url: string }[];
 }

@@ -1,5 +1,6 @@
 import InfoContent from "@/components/info-content";
 import StatusBar from "@/components/status-bar";
+import TypeBadge from "@/components/type-badge";
 import { IPokemon } from "@/constants/type.model";
 import { getTypeColor } from "@/utils";
 import { fetchPokemon } from "@/utils/api";
@@ -93,6 +94,14 @@ export default function PokemonDetailScreen() {
             {pokemon.name}
           </Text>
 
+          <View
+            style={{ alignSelf: "flex-start", flexDirection: "row", gap: 4 }}
+          >
+            {pokemon?.types.map((t) => (
+              <TypeBadge key={t.type.name} type={t.type.name} />
+            ))}
+          </View>
+
           {image && (
             <Image
               source={{ uri: image }}
@@ -147,7 +156,6 @@ export default function PokemonDetailScreen() {
         </View>
 
         {/* Content */}
-
         <View style={{ padding: 20 }}>
           {tab === "stats" ? (
             <View>
